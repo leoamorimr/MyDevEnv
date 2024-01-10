@@ -146,7 +146,7 @@ jobs:
             - name: 'Create delta packages for new, modified or deleted metadata'
               run: | 
                   mkdir changed-sources
-                  sfdx sgd:source:delta --to "HEAD" --from "HEAD^" --output changed-sources/ --generate-delta --source force-app/ 
+                  sfdx sgd:source:delta --to "HEAD" --from "HEAD^" --output changed-sources/ --generate-delta --source force-app/* 
 
             # Now we can use the sfdx scanner to scan the code in the delta directory
             # The output of the scan is stored in a file called apexScanResults.sarif
@@ -182,5 +182,10 @@ jobs:
             #   run: |
             #       sfdx force:source:deploy -p "changed-sources/force-app" --checkonly --testlevel RunLocalTests  --json
 
+            # - name: 'Print deployed delta changes'
+            #   shell: bash
+            #     run: | 
+            #       cat ./changed-sources/destructiveChanges
             - name: 'Deploy destructive changes (if any)'
-              run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --ignorewarnings 
+              # run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --ignorewarnings
+              run: sfdx force:source:deploy -x ./manifest/package.xml --ignorewarnings
