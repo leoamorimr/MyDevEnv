@@ -11,7 +11,7 @@ on:
       # The branches filter allows to specify that this workflow should only
       # run if the branch name is "develop". This way we prevent this workflow
       # from running when PRs are opened on other branches
-      branches: [ main ]
+      branches: [ develop ]
       # We only care about changes to the force-app directory, which is the
       # root directory of the sfdx project. This prevents the job from running
       # when changing non-salesforce files (like this yml file).
@@ -88,10 +88,10 @@ jobs:
             - name: 'Create delta packages for new, modified or deleted metadata'
               run: | 
                   mkdir changed-sources
-                  sfdx sgd:source:delta --to "origin/main" --from "origin/dev" --output changed-sources/ --generate-delta --source force-app/ 
+                  sfdx sgd:source:delta --to "origin/develop" --from "HEAD" --generate-delta --output changed-sources/
                   ls -l ./changed-sources
-                  cat ./changed-sources/deltaChanges/deltaChanges.xml
-                  cat ./changed-sources/deltaChanges/package.xml
+                  cat ./changed-sources/destructiveChanges/destructiveChanges.xml
+                  cat ./changed-sources/destructiveChanges/package.xml
 
             # Now we can use the sfdx scanner to scan the code in the delta directory
             # The output of the scan is stored in a file called apexScanResults.sarif
@@ -116,5 +116,6 @@ jobs:
               run: sf project deploy validate -x ./manifest/package.xml --test-level RunLocalTests --json
               
             #Deployment
-            - name: 'Deploy delta changes (if any)'
-              run: sf project deploy start -x "/changed-sources/deltaChanges/deltaChanges.xml" --test-level NoTestRun 
+            - name: 'Deploy destructive changes (if any)'
+              # run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --ignorewarnings
+              run: sf project deploy start -x ./manifest/package.xml --test-level NoTestRun  
