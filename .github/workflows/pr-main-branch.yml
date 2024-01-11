@@ -148,6 +148,7 @@ jobs:
                   mkdir changed-sources
                   sfdx sgd:source:delta --to "origin/main" --from "origin/dev" --output changed-sources/ --generate-delta --source force-app/ 
                   ls -l ./changed-sources
+                  cat destructiveChanges
 
             # Now we can use the sfdx scanner to scan the code in the delta directory
             # The output of the scan is stored in a file called apexScanResults.sarif
@@ -167,22 +168,11 @@ jobs:
               with:
                 sarif_file: changed-sources/apexScanResults.sarif
 
-            # We do a check-only deploy and we only run the tests specified in the PR
-            # If the env variable does not equal 'all', we know that there is a list of
-            # tests that can be run
+            # Run Tests
+            - name: Validate Salesforce Objects
+              run: sfdx force:source:deploy -x ./manifest/package.xml --checkonly --testlevel RunLocalTests
 
-            # - name: 'Check-only deploy delta changes - run specified tests'
-            #   if: ${{ env.APEX_TESTS != 'all' }}
-            #   run: |
-            #       echo ${{env.APEX_TESTS}}
-            #       sfdx force:source:deploy -p "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
-
-            # # If the env variable equals all, we run all tests
-            # - name: 'Check-only deploy delta changes - run all tests'
-            #   if: ${{ env.APEX_TESTS == 'all' }}
-            #   run: |
-            #       sfdx force:source:deploy -p "changed-sources/force-app" --checkonly --testlevel RunLocalTests  --json
-
+            #Deployment
             - name: 'Deploy destructive changes (if any)'
-              run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --ignorewarnings
-              # run: sfdx force:source:deploy -x ./manifest/package.xml --ignorewarnings
+              # run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --ignorewarnings
+              run: sfdx force:source:deploy -x ./manifest/package.xml --ignorewarnings
