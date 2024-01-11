@@ -113,9 +113,9 @@ jobs:
 
             # Run Tests
             - name: Validate Salesforce Objects
-              run: sfdx force:source:deploy -x ./manifest/package.xml --checkonly --testlevel RunLocalTests
-
+              run: sf project deploy validate -x ./manifest/package.xml 
+              
             #Deployment
             - name: 'Deploy destructive changes (if any)'
               # run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --ignorewarnings
-              run: sfdx force:source:deploy -x ./manifest/package.xml --ignorewarnings
+              run: sf project deploy start -x ./manifest/package.xml --ignorewarnings
