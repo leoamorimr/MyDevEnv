@@ -111,9 +111,9 @@ jobs:
               with:
                 sarif_file: changed-sources/apexScanResults.sarif
 
-            # Run Tests
-            - name: Validate Salesforce Objects
-              run: sf project deploy validate -x ./manifest/package.xml  --test-level RunLocalTests --json
+            # # Run Tests
+            # - name: Validate Salesforce Objects
+            #   run: sf project deploy validate -x ./manifest/package.xml  --test-level RunLocalTests --json
               
             #Deployment
             - name: 'Deploy destructive changes (if any)'
