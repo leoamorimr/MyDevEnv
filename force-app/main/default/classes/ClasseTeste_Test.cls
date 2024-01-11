@@ -1,7 +1,7 @@
 @isTest
 public class ClasseTeste_Test {
     @isTest
-    public void testConstructor() {
+    public static void testConstructor() {
         String a = 'a';
     }
 }
