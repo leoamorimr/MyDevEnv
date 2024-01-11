@@ -1,5 +1,5 @@
-public with sharing class ClasseTeste {
+public class ClasseTeste {
     public ClasseTeste() {
-        String a = "a";
+        String a = 'a';
     }
 }
