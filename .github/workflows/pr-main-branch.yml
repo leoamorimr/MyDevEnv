@@ -118,4 +118,4 @@ jobs:
             #Deployment
             - name: 'Deploy destructive changes (if any)'
               # run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --ignorewarnings
-              run: sf project deploy start -x ./manifest/package.xml --test-level NoTestRun 
+              run: sf project deploy start -x ./manifest/package.xml --test-level NoTestRun  
