@@ -88,7 +88,7 @@ jobs:
             - name: 'Create delta packages for new, modified or deleted metadata'
               run: | 
                   mkdir changed-sources
-                  sfdx sgd:source:delta --to "origin/develop" --from "HEAD" --generate-delta --output changed-sources/
+                  sfdx sgd:source:delta --to "HEAD" --from "HEAD~1" --generate-delta --output changed-sources/
                   ls -l ./changed-sources
                   cat ./changed-sources/destructiveChanges/destructiveChanges.xml
                   cat ./changed-sources/destructiveChanges/package.xml
@@ -113,9 +113,9 @@ jobs:
 
             # Run Tests Locally
             - name: Validate Salesforce Objects
-              run: sf project deploy validate -x ./manifest/package.xml --test-level RunLocalTests --json
+              run: sf project deploy validate -x ./changed-sources/destructiveChanges/package.xml --test-level RunLocalTests --json
               
             #Deployment
             - name: 'Deploy destructive changes (if any)'
               # run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --ignorewarnings
-              run: sf project deploy start -x ./manifest/package.xml --test-level NoTestRun  
+              run: sf project deploy start -x ./changed-sources/destructiveChanges/package.xml --postdestructivechanges destructiveChanges/destructiveChanges.xml --test-level NoTestRun  
