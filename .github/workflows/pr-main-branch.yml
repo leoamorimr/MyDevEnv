@@ -90,8 +90,8 @@ jobs:
                   mkdir changed-sources
                   sfdx sgd:source:delta --to "origin/main" --from "origin/dev" --output changed-sources/ --generate-delta --source force-app/ 
                   ls -l ./changed-sources
-                  cat ./changed-sources/destructiveChanges/destructiveChanges.xml
-                  cat ./changed-sources/destructiveChanges/package.xml
+                  cat ./changed-sources/deltaChanges/deltaChanges.xml
+                  cat ./changed-sources/deltaChanges/package.xml
 
             # Now we can use the sfdx scanner to scan the code in the delta directory
             # The output of the scan is stored in a file called apexScanResults.sarif
@@ -111,11 +111,10 @@ jobs:
               with:
                 sarif_file: changed-sources/apexScanResults.sarif
 
-            # # Run Tests
-            # - name: Validate Salesforce Objects
-            #   run: sf project deploy validate -x ./manifest/package.xml  --test-level RunLocalTests --json
+            # Run Tests Locally
+            - name: Validate Salesforce Objects
+              run: sf project deploy validate -x ./manifest/package.xml --test-level RunLocalTests --json
               
             #Deployment
-            - name: 'Deploy destructive changes (if any)'
-              # run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --ignorewarnings
-              run: sf project deploy start -x ./manifest/package.xml --test-level NoTestRun 
+            - name: 'Deploy delta changes (if any)'
+              run: sf project deploy start -x "/changed-sources/deltaChanges/deltaChanges.xml" --test-level NoTestRun 
